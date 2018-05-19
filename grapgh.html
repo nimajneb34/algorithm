@@ -5,14 +5,21 @@
 <canvas id="monte" width="400" height="200" style="border:1px solid #000000;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
-<p id="count1">0</p>
+<br>
+<input id="montecarlo1" type="button" value="montecarlo1" onclick="montecarlo(512);" />
+<input id="montecarlo2" type="button" value="montecarlo2" onclick="montecarlo(2048);" />
+<br>
+<p>dots in both circle: </p>
+<p id="count1"></p>
+
 
 <script type="text/javascript">
-	function draw(){
-        let canvas = document.getElementById('monte');
+	function montecarlo(dots){
+        const canvas = document.getElementById('monte');
         count1=0;
         if (canvas.getContext){
-          let ctx = canvas.getContext('2d');
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0,0,canvas.width,canvas.height);
           ctx.strokeStyle = 'rgb(0,255,0)';
           ctx.beginPath();
           ctx.arc(0,200,200,-90,0.5*Math.PI);
@@ -21,22 +28,21 @@ Your browser does not support the HTML5 canvas tag.
           ctx.beginPath();
           ctx.arc(200,200,200,-180,Math.PI);
           ctx.stroke();
-          for(let i=0; i<=512; i++){
+          for(let i=0; i<=dots; i++){  //512,2048
           	let x =Math.floor(Math.random()*401);
             let y =Math.floor(Math.random()*201);
             if((Math.pow(x,2)+Math.pow(y-200,2)<Math.pow(200,2))&&(Math.pow(200-x,2)+Math.pow(200-y,2)<Math.pow(200,2))){
             		count1++;
           			ctx.fillStyle = "rgb(255,0,0)";
             		ctx.fillRect(x,y,1,1);
-                }else{
+            }else{
                 	ctx.fillStyle = "rgb(0,0,255)";
                     ctx.fillRect(x,y,1,1);
-                }
+            }
           }
           document.getElementById("count1").innerHTML=count1;
         }
       }
-      draw();
 </script>
 
 </body>
