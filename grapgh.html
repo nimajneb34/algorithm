@@ -9,14 +9,13 @@ Your browser does not support the HTML5 canvas tag.
 <input id="montecarlo1" type="button" value="montecarlo1" onclick="montecarlo(512);" />
 <input id="montecarlo2" type="button" value="montecarlo2" onclick="montecarlo(2048);" />
 <br>
-<p>dots in both circle: </p>
-<p id="count1"></p>
+<p>dots in both circle / total: <span id="count"></span> / <span id="total"></span></p>
 
 
 <script type="text/javascript">
 	function montecarlo(dots){
         const canvas = document.getElementById('monte');
-        count1=0;
+        count=0;
         if (canvas.getContext){
           const ctx = canvas.getContext('2d');
           ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -32,7 +31,7 @@ Your browser does not support the HTML5 canvas tag.
           	let x =Math.floor(Math.random()*401);
             let y =Math.floor(Math.random()*201);
             if((Math.pow(x,2)+Math.pow(y-200,2)<Math.pow(200,2))&&(Math.pow(200-x,2)+Math.pow(200-y,2)<Math.pow(200,2))){
-            		count1++;
+            		count++;
           			ctx.fillStyle = "rgb(255,0,0)";
             		ctx.fillRect(x,y,1,1);
             }else{
@@ -40,9 +39,11 @@ Your browser does not support the HTML5 canvas tag.
                     ctx.fillRect(x,y,1,1);
             }
           }
-          document.getElementById("count1").innerHTML=count1;
+          document.getElementById("count").innerHTML=count;
+          document.getElementById("total").innerHTML=dots;
         }
       }
+  
 </script>
 
 </body>
