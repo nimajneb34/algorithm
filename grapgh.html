@@ -2,48 +2,69 @@
 <html>
 <body>
 
-<canvas id="monte" width="400" height="200" style="border:1px solid #000000;">
-Your browser does not support the HTML5 canvas tag.
-</canvas>
-<br>
-<input id="montecarlo1" type="button" value="montecarlo1" onclick="montecarlo(512);" />
-<input id="montecarlo2" type="button" value="montecarlo2" onclick="montecarlo(2048);" />
-<br>
-<p>dots in both circle / total: <span id="count"></span> / <span id="total"></span></p>
-
-
-<script type="text/javascript">
-	function montecarlo(dots){
-        const canvas = document.getElementById('monte');
-        count=0;
-        if (canvas.getContext){
-          const ctx = canvas.getContext('2d');
-          ctx.clearRect(0,0,canvas.width,canvas.height);
-          ctx.strokeStyle = 'rgb(0,255,0)';
-          ctx.beginPath();
-          ctx.arc(0,200,200,-90,0.5*Math.PI);
-          ctx.stroke();
-          ctx.strokeStyle = 'rgb(0,0,255)';
-          ctx.beginPath();
-          ctx.arc(200,200,200,-180,Math.PI);
-          ctx.stroke();
-          for(let i=0; i<=dots; i++){  //512,2048
-          	let x =Math.floor(Math.random()*401);
-            let y =Math.floor(Math.random()*201);
-            if((Math.pow(x,2)+Math.pow(y-200,2)<Math.pow(200,2))&&(Math.pow(200-x,2)+Math.pow(200-y,2)<Math.pow(200,2))){
-            		count++;
-          			ctx.fillStyle = "rgb(255,0,0)";
-            		ctx.fillRect(x,y,1,1);
-            }else{
-                	ctx.fillStyle = "rgb(0,0,255)";
-                    ctx.fillRect(x,y,1,1);
-            }
-          }
-          document.getElementById("count").innerHTML=count;
-          document.getElementById("total").innerHTML=dots;
-        }
-      }
+  <font face="微軟正黑體" size="5">基本題 4-1:使用蒙地卡羅求兩圓相交之面積?</font>
+  <br>
+  <canvas id="monte" width="400" height="200" style="border:1px solid #000000;">
+    Your browser does not support the HTML5 canvas tag.
+  </canvas>
+  <br>
+  <input id="montecarlo1" type="button" value="montecarlo1" onclick="montecarlo(512);" />
+  <input id="montecarlo2" type="button" value="montecarlo2" onclick="montecarlo(2048);" />
+  <br>
+  <p>圓內的點 / 全部的點 : <span id="count"></span> / <span id="total"></span></p>
+  <hr>
+  <font face="微軟正黑體" size="5">基本題 4-2:使用蒙地卡羅骰子連投6次，其點數和(6~36)，各點數和之機率?</font><br>
   
+  <font face="微軟正黑體" size="4">(a)骰子是均勻，即點1到點6出現機率一樣?</font><br>
+  
+
+  <script type="text/javascript">
+    //蒙地卡羅算圓內點數量
+	  function montecarlo(dots){
+      //設定變數控制網頁中canvas項目
+      const canvas = document.getElementById('monte');
+      //計數器歸零
+      count=0;
+      if (canvas.getContext){
+        const ctx = canvas.getContext('2d');
+        //清空畫布
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        //畫圓(綠色)
+        ctx.strokeStyle = 'rgb(0,255,0)';
+        ctx.beginPath();
+        ctx.arc(0,200,200,-90,0.5*Math.PI);
+        ctx.stroke();
+        //畫圓(藍色)
+        ctx.strokeStyle = 'rgb(0,0,255)';
+        ctx.beginPath();
+        ctx.arc(200,200,200,-180,Math.PI);
+        ctx.stroke();
+        //產生點點，點的位置用RANDOM去抓並無條件捨去小數
+        for(let i=0; i<=dots; i++){  //512,2048
+        	let x =Math.floor(Math.random()*401);
+          let y =Math.floor(Math.random()*201);
+          //如果點的位置座標在圓以內計數器+1並用紅色畫上畫布
+          if((Math.pow(x,2)+Math.pow(y-200,2)<Math.pow(200,2))&&(Math.pow(200-x,2)+Math.pow(200-y,2)<Math.pow(200,2))){
+        		  count++;
+      			  ctx.fillStyle = "rgb(255,0,0)";
+              ctx.fillRect(x,y,1,1);
+          //若非圓內則以藍色繪製
+          }else{
+            	  ctx.fillStyle = "rgb(0,0,255)";
+                ctx.fillRect(x,y,1,1);
+          }
+        }
+        document.getElementById("count").innerHTML=count;
+        document.getElementById("total").innerHTML=dots;
+      }
+    }
+  
+    //產生隨機數字1~6
+    function equaldice(){
+      return Math.floor(Math.random()*7);
+    }
+
+    
 </script>
 
 </body>
