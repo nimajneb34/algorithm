@@ -16,7 +16,9 @@
   <font face="微軟正黑體" size="5">基本題 4-2:使用蒙地卡羅骰子連投6次，其點數和(6~36)，各點數和之機率?</font><br>
   
   <font face="微軟正黑體" size="4">(a)骰子是均勻，即點1到點6出現機率一樣?</font><br>
-  
+  <input type="button" value="randomdice" onclick="randomdice();">
+  <table id="randomtable">
+  </table>
 
   <script type="text/javascript">
     //蒙地卡羅算圓內點數量
@@ -61,7 +63,19 @@
   
     //產生隨機數字1~6
     function equaldice(){
-      return Math.floor(Math.random()*7);
+      return 1+Math.floor(Math.random()*6);
+    }
+
+    function randomdice(){
+      var str="";
+      for(var i=0; i<10; i++){
+        str+="<tr>";
+          for(var j=0; j<10; j++){
+            str=str+"<td>"+equaldice()+"</td>";
+          }
+        str+="</tr>";
+      }
+      document.getElementById("randomtable").innerHTML=str;
     }
 
     
