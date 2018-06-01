@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+</head>
 <body>
 
   <font face="微軟正黑體" size="5">基本題 4-1:使用蒙地卡羅求兩圓相交之面積?</font>
@@ -16,9 +22,51 @@
   <font face="微軟正黑體" size="5">基本題 4-2:使用蒙地卡羅骰子連投6次，其點數和(6~36)，各點數和之機率?</font><br>
   
   <font face="微軟正黑體" size="4">(a)骰子是均勻，即點1到點6出現機率一樣?</font><br>
-  <input type="button" value="randomdice" onclick="randomdice();">
-  <table id="randomtable">
-  </table>
+  <input class="btn btn-primary" type="button" value="隨機丟100組公平骰子" onclick="randomdice(100);">
+  <input class="btn btn-primary" type="button" value="隨機丟100組不公平骰子" onclick="randomunequaldice(100);">
+  <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#randomtablemain" aria-expanded="false" aria-controls="randomtablemain">
+    展開/收起 Random Table
+  </button>
+  <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#randomstatmain" aria-expanded="false" aria-controls="randomstatmain">
+      展開/收起 統計表
+  </button>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+          <div class="collapse show" id="randomtablemain">
+              <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">1</th>
+                      <th scope="col">2</th>
+                      <th scope="col">3</th>
+                      <th scope="col">4</th>
+                      <th scope="col">5</th>
+                      <th scope="col">6</th>
+                      <th scope="col">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="randomtable"></tbody>
+                </table>
+          </div>
+      </div>
+      <div class="col">
+        <div class="collapse show" id="randomstatmain">
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 25%">#</th>
+                    <th scope="col" style="width: 25%">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="randomstat"></tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 
   <script type="text/javascript">
     //蒙地卡羅算圓內點數量
@@ -66,20 +114,37 @@
       return 1+Math.floor(Math.random()*6);
     }
 
-    function randomdice(){
-      var str="";
-      for(var i=0; i<10; i++){
-        str+="<tr>";
-          for(var j=0; j<10; j++){
-            str=str+"<td>"+equaldice()+"</td>";
+    function randomdice(time){
+      var str="", stat="", dicearr=new Array(42);
+      for(var i=0; i<dicearr.length; i++){
+        dicearr[i]=0;
+      }
+      for(var i=0; i<time; i++){
+        var sum=0;
+        str=str+"<tr><th scope=\"row\">"+(i+1)+"</th>";
+          for(var j=0; j<6; j++){
+            var dice=equaldice();
+            sum+=dice;
+            dicearr[dice-1]+=1;
+            str=str+"<td>"+dice+"</td>";
           }
+        str=str+"<td>"+sum+"</td>";
+        dicearr[sum-1]+=1;
         str+="</tr>";
       }
+      for(var i=0; i<dicearr.length;i++){
+        stat=stat+"<tr><th style=\"width: 25%\">"+(i+1)+"</th>";
+        stat=stat+"<td style=\"width: 25%\">"+dicearr[i]+"</td>";
+      }
       document.getElementById("randomtable").innerHTML=str;
+      document.getElementById("randomstat").innerHTML=stat;
     }
 
     
 </script>
 
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 </body>
 </html>
