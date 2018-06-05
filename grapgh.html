@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-
 </head>
 <body>
 
@@ -22,8 +21,10 @@
   <font face="微軟正黑體" size="5">基本題 4-2:使用蒙地卡羅骰子連投6次，其點數和(6~36)，各點數和之機率?</font><br>
   
   <font face="微軟正黑體" size="4">(a)骰子是均勻，即點1到點6出現機率一樣?</font><br>
-  <input class="btn btn-primary" type="button" value="隨機丟100組公平骰子" onclick="randomdice(100);">
-  <input class="btn btn-primary" type="button" value="隨機丟100組不公平骰子" onclick="randomunequaldice(100);">
+  <font face="微軟正黑體" size="4">(b)骰子是不均勻，點1出現機率0.1，點2出現機率0.3，..(即f(1)=0.1, f(2)=0.3, f(3)=0.3, f(4)=0.1, f(5)=0.1, f(6)=0.1)</font><br>
+  <font face="微軟正黑體" size="3" color="red">a, b接擲100組做測試</font><br>
+  <input class="btn btn-primary" type="button" value="(a) 公平骰子" onclick="randomdice(100,true);">
+  <input class="btn btn-primary" type="button" value="(b) 不公平骰子" onclick="randomdice(100,false);">
   <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#randomtablemain" aria-expanded="false" aria-controls="randomtablemain">
     展開/收起 Random Table
   </button>
@@ -53,19 +54,21 @@
       </div>
       <div class="col">
         <div class="collapse show" id="randomstatmain">
-            <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th scope="col" style="width: 25%">#</th>
-                    <th scope="col" style="width: 25%">Amount</th>
-                  </tr>
-                </thead>
-                <tbody id="randomstat"></tbody>
-            </table>
+          <canvas id="dicestat"></canvas>
+          <canvas id="sumstat"></canvas>
         </div>
       </div>
     </div>
   </div>
+  <br>
+  <font face="微軟正黑體" size="5">4-3:蒙地卡羅積分求  ∫(1~0) 𝒙̃^𝟐 𝒅𝒙̃ ,𝒙̃ 假設如下:</font><br>
+  <font face="微軟正黑體" size="5">(a) 𝒙̃ 為連續隨機均勻在[0,1]間，積分區間在[0,1]間</font>
+  <input class="btn btn-primary" type="button" value="Test" onclick="montecarloIn1(0,1,1000000,0,1);"><br>
+  <font face="微軟正黑體" size="5">(b) 𝒙̃ 為連續隨機均勻在[0,2]間，積分區間在[0,1]間</font>
+  <input class="btn btn-primary" type="button" value="Test" onclick="montecarloIn1(0,1,1000000,0,2);"><br>
+  <font face="微軟正黑體" size="5">(c) 𝒙̃ 為隨機常態分佈(平均值為1, 標準差為2) ，積分區間在[0,1]間</font><br>
+  <input class="btn btn-primary" type="button" value="Test" onclick="montecarloIn2(0,1,1000000);"><br>
+  <font face="微軟正黑體" size="5">sum / total = <span id="montecarloIn"></span></font><br>
   
 
   <script type="text/javascript">
@@ -114,37 +117,142 @@
       return 1+Math.floor(Math.random()*6);
     }
 
-    function randomdice(time){
-      var str="", stat="", dicearr=new Array(42);
+    //在頁面顯示丟不隨機骰子(反隨機轉換法參數已設定好)
+    function unequaldice(){
+      var ratio=[0.1,0.3,0.3,0.1,0.1,0.1];
+      var random=Math.random();
+      for(var i=0,max=0; i<ratio.length;i++){
+        max+=ratio[i];
+        if(random<=max){
+          return i+1;
+        }
+      }
+    }
+
+    //在頁面顯示丟(time)次骰子的結果(israndom判斷是否為公平骰子)
+    function randomdice(time,israndom){
+      var str="", stat="", dicearr=new Array(6), sumarr=new Array(31);
+      removecanvas(randomstatmain)
+      var dicestat = document.getElementById('dicestat').getContext('2d');
+      var sumstat = document.getElementById('sumstat').getContext('2d');
       for(var i=0; i<dicearr.length; i++){
         dicearr[i]=0;
+      }
+      for(var i=0; i<sumarr.length; i++){
+        sumarr[i]=0;
       }
       for(var i=0; i<time; i++){
         var sum=0;
         str=str+"<tr><th scope=\"row\">"+(i+1)+"</th>";
           for(var j=0; j<6; j++){
-            var dice=equaldice();
+            var dice;
+            if(israndom){
+              dice=equaldice();
+            }else{
+              dice=unequaldice();
+            }
             sum+=dice;
             dicearr[dice-1]+=1;
             str=str+"<td>"+dice+"</td>";
           }
         str=str+"<td>"+sum+"</td>";
-        dicearr[sum-1]+=1;
+        sumarr[sum-6]+=1;
         str+="</tr>";
       }
-      for(var i=0; i<dicearr.length;i++){
-        stat=stat+"<tr><th style=\"width: 25%\">"+(i+1)+"</th>";
-        stat=stat+"<td style=\"width: 25%\">"+dicearr[i]+"</td>";
-      }
+      var dicechart = new Chart(dicestat,{
+        type:'bar',
+        data:{
+          labels:[1,2,3,4,5,6],
+          datasets:[{
+            label:"Dice Stat",
+            backgroundColor: getRandomColorArray(),
+            borderColor: getRandomColorArray(),
+            borderWidth: 1,
+            data: dicearr
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+          }
+        }
+      });
+
+      var sumchart = new Chart(sumstat,{
+        type: 'bar',
+        data:{
+          labels:[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
+          datasets:[{
+            label:"Sum Stat",
+            backgroundColor: getRandomColorArray(),
+            borderColor: getRandomColorArray(),
+            data: sumarr
+          }]
+        }
+      });
       document.getElementById("randomtable").innerHTML=str;
-      document.getElementById("randomstat").innerHTML=stat;
     }
 
-    
+    function montecarloIn1(a, b, total, min, max){
+      var sum=0;
+      for(var i=0; i<total; i++){
+        var random=Math.random()*max+min;
+        if(a<=random&&random<=b){
+          sum+=f(random);
+        }
+      }
+      sum = sum * (b-a);
+      document.getElementById("montecarloIn").innerHTML=sum/total;
+    }
+
+    function montecarloIn2(a, b, total, min, max){
+      var sum=0;
+      for(var i=0; i<total; i++){
+        var random = d3.randomNormal(1, 2.0)();
+        if(a<=random&&random<=b){
+          sum+=f(random);
+        }
+      }
+      sum = sum * (b-a);
+      document.getElementById("montecarloIn").innerHTML=sum/total;
+    }
+
+    function f(x){
+      return Math.pow(x,2);
+    }
+
+    function removecanvas(){
+      var oldcanv = document.getElementById("randomstatmain");
+      var olddicestat=document.getElementById("dicestat");
+      var oldsumstat=document.getElementById("sumstat");
+      var dicestat=document.createElement('canvas');
+      dicestat.id="dicestat";
+      var sumstat = document.createElement('canvas');
+      sumstat.id="sumstat";
+      oldcanv.replaceChild(dicestat,olddicestat);
+      oldcanv.replaceChild(sumstat,oldsumstat);
+
+    }
+
+    function getRandomColorArray() {
+      var letters = '0123456789abcdef'.split('');
+      var color="#";
+      for (var i = 0; i < 6; i++ ) {
+          color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script src="https://d3js.org/d3-random.v1.min.js"></script>
 </body>
 </html>
